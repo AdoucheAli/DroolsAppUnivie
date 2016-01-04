@@ -1,0 +1,48 @@
+import drools.Purchase
+import drools.PaymentType
+import drools.Destination
+import drools.Client
+import drools.ClientType
+import utils.Mailer
+
+dialect  "mvel"
+
+rule "Paying with cash"
+    when
+        $p:Purchase(paymentType == PaymentType.BANKACCOUNT)
+    then
+        $p.setDiscount(0);
+        Mailer.sendMessage($p);
+end
+
+rule "Paying with paypal or credit card"
+    when
+        $p:Purchase(paymentType == PaymentType.PAYPAL)
+        or $p:Purchase(paymentType == PaymentType.CREDITCARD)
+    then
+        $p.setDiscount(0.1);
+end
+
+rule "National Shipping"
+    when
+        $p:Purchase(destination == Destination.PL)
+    then
+        $p.setShippingCosts(0);
+end
+
+rule "Shipping to EU countries"
+    when
+        $p:Purchase(destination == Destination.DE)
+        or $p:Purchase(destination == Destination.EN)
+    then
+        $p.setShippingCosts(15);
+end
+
+rule "Shipping to US"
+    when
+        $p:Purchase(destination == Destination.US)
+    then
+        $p.setShippingCosts(30);
+end
+
+
