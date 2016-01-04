@@ -46,15 +46,15 @@ public class PurchaseRulesTest {
         Client companyClient = new Client("test", exampleClientMails[0], ClientType.COMPANY);
         Product product = new Product("football", 10);
         Purchase nationalPaypalPayment = new Purchase(privateClient, product, PaymentType.PAYPAL, Destination.PL);
-        Purchase internationalBankPayment = new Purchase(privateClient, product, PaymentType.BANKACCOUNT, Destination.US);
+        Purchase internationalBankPayment = new Purchase(privateClient, product, PaymentType.BANKACCOUNT, Destination.DE);
         Purchase internationalBankPaymentByCompany = new Purchase(companyClient, product, PaymentType.CREDITCARD, Destination.US);
         session.insert(nationalPaypalPayment);
         session.insert(internationalBankPayment);
         session.insert(internationalBankPaymentByCompany);
         session.fireAllRules();
         assertEquals(9, nationalPaypalPayment.toPay(), 0);
-        assertEquals(40, internationalBankPayment.toPay(), 0);
-        assertEquals(37, internationalBankPaymentByCompany.toPay(), 0);
+        assertEquals(25, internationalBankPayment.toPay(), 0);
+        assertEquals(29, internationalBankPaymentByCompany.toPay(), 0);
         session.dispose();
         MimeMessage[] emails = greenMail.getReceivedMessages();
         assertEquals(1, emails.length);
