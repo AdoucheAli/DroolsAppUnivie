@@ -19,6 +19,7 @@ import static org.junit.Assert.assertEquals;
 public class PurchaseRulesTest {
 
     private static final String DRL_PATH = "rules.drl";
+    private String[] exampleClientMails = { "test@gmail.com", "test2@gmail.com"};
     public GreenMail greenMail;
 
     @Before
@@ -41,7 +42,7 @@ public class PurchaseRulesTest {
     @Test
     public void testRules() throws MessagingException {
         KieSession session = DroolsSessionUtils.createKieSession(DRL_PATH);
-        Client client = new Client("test", "test@gmail.com", ClientType.PRIVATE);
+        Client client = new Client("test", exampleClientMails[0], ClientType.PRIVATE);
         Purchase nationalPaypalPayment = new Purchase(client, 10, PaymentType.CREDITCARD, Destination.PL);
         Purchase internationalBankPayment = new Purchase(client, 100, PaymentType.BANKACCOUNT, Destination.DE);
         session.insert(nationalPaypalPayment);
@@ -52,18 +53,18 @@ public class PurchaseRulesTest {
         session.dispose();
         MimeMessage[] emails = greenMail.getReceivedMessages();
         assertEquals(1, emails.length);
-        assertEquals("test@gmail.com", emails[0].getAllRecipients()[0].toString());
+        assertEquals(exampleClientMails[0], emails[0].getAllRecipients()[0].toString());
     }
 
 
     @Test
     public void testMailContent() throws IOException, MessagingException {
-        Client client = new Client("test", "test2@gmail.com", ClientType.PRIVATE);
+        Client client = new Client("test", exampleClientMails[1], ClientType.PRIVATE);
         Purchase nationalBankPayment = new Purchase(client, 10, PaymentType.BANKACCOUNT, Destination.PL);
         Mailer.sendMessage(nationalBankPayment);
         MimeMessage[] emails = greenMail.getReceivedMessages();
         assertEquals("Purchase confirmation", emails[0].getSubject());
-        assertEquals("test2@gmail.com", emails[0].getAllRecipients()[0].toString());
+        assertEquals(exampleClientMails[1], emails[0].getAllRecipients()[0].toString());
     }
 
 }
