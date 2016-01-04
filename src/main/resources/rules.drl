@@ -45,4 +45,11 @@ rule "Shipping to US"
         $p.setShippingCosts(30);
 end
 
+rule "User is company client"
+    when
+        $p:Purchase(client.clientType == ClientType.COMPANY)
+    then
+        $p.setDiscount(0.3);
+end
+
 

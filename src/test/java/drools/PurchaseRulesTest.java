@@ -42,14 +42,19 @@ public class PurchaseRulesTest {
     @Test
     public void testRules() throws MessagingException {
         KieSession session = DroolsSessionUtils.createKieSession(DRL_PATH);
-        Client client = new Client("test", exampleClientMails[0], ClientType.PRIVATE);
-        Purchase nationalPaypalPayment = new Purchase(client, 10, PaymentType.CREDITCARD, Destination.PL);
-        Purchase internationalBankPayment = new Purchase(client, 100, PaymentType.BANKACCOUNT, Destination.DE);
+        Client privateClient = new Client("test", exampleClientMails[0], ClientType.PRIVATE);
+        Client companyClient = new Client("test", exampleClientMails[0], ClientType.COMPANY);
+        Product product = new Product("football", 10);
+        Purchase nationalPaypalPayment = new Purchase(privateClient, product, PaymentType.PAYPAL, Destination.PL);
+        Purchase internationalBankPayment = new Purchase(privateClient, product, PaymentType.BANKACCOUNT, Destination.US);
+        Purchase internationalBankPaymentByCompany = new Purchase(companyClient, product, PaymentType.CREDITCARD, Destination.US);
         session.insert(nationalPaypalPayment);
         session.insert(internationalBankPayment);
+        session.insert(internationalBankPaymentByCompany);
         session.fireAllRules();
         assertEquals(9, nationalPaypalPayment.toPay(), 0);
-        assertEquals(115, internationalBankPayment.toPay(), 0);
+        assertEquals(40, internationalBankPayment.toPay(), 0);
+        assertEquals(37, internationalBankPaymentByCompany.toPay(), 0);
         session.dispose();
         MimeMessage[] emails = greenMail.getReceivedMessages();
         assertEquals(1, emails.length);
@@ -60,7 +65,8 @@ public class PurchaseRulesTest {
     @Test
     public void testMailContent() throws IOException, MessagingException {
         Client client = new Client("test", exampleClientMails[1], ClientType.PRIVATE);
-        Purchase nationalBankPayment = new Purchase(client, 10, PaymentType.BANKACCOUNT, Destination.PL);
+        Product product = new Product("football", 10);
+        Purchase nationalBankPayment = new Purchase(client, product, PaymentType.BANKACCOUNT, Destination.PL);
         Mailer.sendMessage(nationalBankPayment);
         MimeMessage[] emails = greenMail.getReceivedMessages();
         assertEquals("Purchase confirmation", emails[0].getSubject());

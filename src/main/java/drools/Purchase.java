@@ -3,15 +3,15 @@ package drools;
 public class Purchase {
 
     private Client client;
-    private double basePrice;
+    private Product product;
     private double discount;
     private double shippingCosts;
     private PaymentType paymentType;
     private Destination destination;
 
-    public Purchase(Client client, double basePrice, PaymentType paymentType, Destination destination) {
+    public Purchase(Client client, Product product, PaymentType paymentType, Destination destination) {
         this.client = client;
-        this.basePrice = basePrice;
+        this.product = product;
         this.paymentType = paymentType;
         this.destination = destination;
     }
@@ -24,12 +24,12 @@ public class Purchase {
         this.client = client;
     }
 
-    public double getBasePrice() {
-        return basePrice;
+    public Product getProduct() {
+        return product;
     }
 
-    public void setBasePrice(double basePrice) {
-        this.basePrice = basePrice;
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
     public double getDiscount() {
@@ -65,6 +65,6 @@ public class Purchase {
     }
 
     public double toPay() {
-        return basePrice + shippingCosts - basePrice*discount;
+        return product.getPrice() + shippingCosts - product.getPrice()*discount;
     }
 }
