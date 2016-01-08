@@ -12,7 +12,7 @@ public class Mailer {
 
     private Mailer() {}
 
-    public static void sendMessage(Purchase purchase) throws MessagingException, IOException {
+    public static void sendMessage(Purchase purchase, String messageText) throws MessagingException, IOException {
         final Properties props = new Properties();
         props.load(Mailer.class.getResourceAsStream("/properties/mail.properties"));
         Session session = Session.getInstance(props,
@@ -23,7 +23,7 @@ public class Mailer {
                 });
         Message message = new MimeMessage(session);
         message.setSubject("Purchase confirmation");
-        message.setText("Your purchase has been realized. Next time try to use paypal or credit card to get 10% discount!");
+        message.setText(messageText);
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(purchase.getClient().getEmail()));
         Transport.send(message);
     }

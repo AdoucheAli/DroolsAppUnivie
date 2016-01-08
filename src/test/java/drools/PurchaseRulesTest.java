@@ -57,7 +57,7 @@ public class PurchaseRulesTest {
         assertEquals(29, internationalBankPaymentByCompany.toPay(), 0);
         session.dispose();
         MimeMessage[] emails = greenMail.getReceivedMessages();
-        assertEquals(1, emails.length);
+        assertEquals(3, emails.length);
         assertEquals(exampleClientMails[0], emails[0].getAllRecipients()[0].toString());
     }
 
@@ -67,7 +67,7 @@ public class PurchaseRulesTest {
         Client client = new Client("test", exampleClientMails[1], ClientType.PRIVATE);
         Product product = new Product("football", 10);
         Purchase nationalBankPayment = new Purchase(client, product, PaymentType.BANKACCOUNT, Destination.PL);
-        Mailer.sendMessage(nationalBankPayment);
+        Mailer.sendMessage(nationalBankPayment, "Test");
         MimeMessage[] emails = greenMail.getReceivedMessages();
         assertEquals("Purchase confirmation", emails[0].getSubject());
         assertEquals(exampleClientMails[1], emails[0].getAllRecipients()[0].toString());

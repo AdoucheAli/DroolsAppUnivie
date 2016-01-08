@@ -12,7 +12,7 @@ rule "Paying with cash"
         $p:Purchase(paymentType == PaymentType.BANKACCOUNT)
     then
         $p.setDiscount(0);
-        Mailer.sendMessage($p);
+        Mailer.sendMessage($p, "Your purchase has been realized. Next time try to use paypal or credit card to get 10% discount!");
 end
 
 rule "Paying with paypal or credit card"
@@ -21,6 +21,8 @@ rule "Paying with paypal or credit card"
         or $p:Purchase(paymentType == PaymentType.CREDITCARD)
     then
         $p.setDiscount(0.1);
+        Mailer.sendMessage($p, "Your purchase has been realized.");
+
 end
 
 rule "National Shipping"
